@@ -36,6 +36,10 @@ X_historial = np.array([
 
 y_historial = np.array([1, 0, 1, 0, 0, 1, 1, 0.5])
 
+# Variable (y_goles) para apostar a Cantidad de Goles Totales (Over/Under)
+# Goles de esos partidos: 5 (3-2), 1 (0-1), 4 (3-1), 1 (0-1), 4 (1-3), 1 (1-0), 2 (2-0), 2 (1-1)
+y_goles_totales = np.array([5, 1, 4, 1, 4, 1, 2, 2])
+
 
 modelo = LinearRegression()
 modelo.fit(X_historial, y_historial)
@@ -69,3 +73,18 @@ elif probabilidad > 0.4:
 else:
     print("Conclusión: Esta difícil la para Coquimbo ñublense tiene la ventaja.")
 
+# ====================================================================
+#               MERCADO DE GOLES (OVER/UNDER 2.5)
+# ====================================================================
+
+modelo_goles = LinearRegression()
+modelo_goles.fit(X_historial, y_goles_totales)
+prediccion_goles = modelo_goles.predict(datos_partido_nuevo)[0]
+
+print("\n--- Apuesta a Cantidad de Goles (Mercado Over/Under) ---")
+print(f"Goles totales esperados por el modelo: {prediccion_goles:.2f}")
+
+if prediccion_goles > 2.5:
+    print("Sugerencia de apuesta: MÁS DE 2.5 GOLES (Over 2.5) en el partido.")
+else:
+    print("Sugerencia de apuesta: MENOS DE 2.5 GOLES (Under 2.5) en el partido.")
