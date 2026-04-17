@@ -1,0 +1,71 @@
+import numpy as np
+import pandas as pd
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import r2_score, mean_absolute_error
+
+#ALL IN a ñublense
+
+#modelo de regresión para predecir el partido de ñublense vs coquimbo unido
+#DIA del partido: 19/04/2025 a las 12:30 Pm
+#Tome datos historicos de sus enfrentamiento y como venian en el campeonato
+#Utiliza Regresión Lineal para sacar un porcentaje de la probabilidad de victoria.
+
+#Datos historicos ultimos 8 enfrentamientos 
+# Variables (x): 
+# [0] coquimbo es local? (1 = si, 0 = no)
+# [1] Racha victorias Coquimbo ultimos 3 partidos jugados
+# [2] Racha victorias Ñublense ultimos 3 partidos jugados
+# [3] Goles promedio de Coquimbo en el campeonato
+
+#Variable (y): 
+#resultado del partido para Coquimbo: 1 (Gana), 0.5 (Empata), 0 (Pierde)
+#el modelo tirara un valor si es aprox 1 es probable que gane.
+#luego lo paso a porcentaje.
+
+
+X_historial = np.array([
+    [1, 0, 1, 1.25], # 2026-04-03 vs Cobresal (Victoria 3-2) - Local
+    [0, 1, 2, 1.25], # 2026-03-14 vs U. de Chile (Derrota 0-1) - Visita
+    [1, 0, 1, 1.25], # 2026-03-07 vs Huachipato (Victoria 3-1) - Local
+    [0, 0, 1, 1.25], # 2026-02-28 vs D. Concepción (Derrota 0-1) - Visita
+    [1, 2, 2, 1.25], # 2026-02-21 vs U. Católica (Derrota 1-3) - Local
+    [0, 1, 0, 1.25], # 2026-02-14 vs La Serena (Victoria 1-0) - Visita
+    [1, 0, 0, 1.25], # 2026-02-07 vs Otro equipo (Victoria) - Local
+    [0, 1, 1, 1.25]  # 2026-01-XX vs Otro equipo (Empate) - Visita
+])
+
+y_historial = np.array([1, 0, 1, 0, 0, 1, 1, 0.5])
+
+
+modelo = LinearRegression()
+modelo.fit(X_historial, y_historial)
+
+#prediccion para los datos historicos
+predicciones = modelo.predict(X_historial)
+print("R2 Score (que tan bien se ajusta):", round(r2_score(y_historial, predicciones), 2))
+print("Error absoluto medio (MAE):", round(mean_absolute_error(y_historial, predicciones), 2))
+print("-" * 30)
+
+
+#evaluar modelo con datos nuevos
+#datos de cómo llegan al partido:
+#juegan en el estadio de ñublense, así que coquimbo es visita (0).
+#coquimbo viene con 2 victorias en sus ultimos 3 partidos.
+#ñublense viene con 1 victoria.
+#promedio de goles de coquimbo en el campeonato es 1.25 (datos reales)
+datos_partido_nuevo = np.array([[0, 2, 1, 1.25]])
+
+prediccion = modelo.predict(datos_partido_nuevo)[0]
+
+probabilidad = max(0, min(prediccion, 1))
+
+print(f"\nPredicción para el partido Ñublense vs Coquimbo Unido (19/04/2025):")
+print(f"Probabilidad de que GANE Coquimbo Unido: {probabilidad * 100:.2f}%\n")
+
+if probabilidad > 0.6:
+    print("Conclusión: ¡Es muy probable que Coquimbo gane!")
+elif probabilidad > 0.4: 
+    print("Conclusión: Va a estar reñido, huele a un empate.")
+else:
+    print("Conclusión: Esta difícil la para Coquimbo ñublense tiene la ventaja.")
+
